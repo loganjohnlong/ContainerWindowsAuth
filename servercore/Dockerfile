@@ -1,5 +1,7 @@
 # escape=`
 FROM mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019
+RUN C:\Windows\system32\inetsrv\appcmd.exe set AppPool DefaultAppPool /processModel.identityType:NetworkService
+
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Continue'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
 
 WORKDIR app
@@ -17,8 +19,6 @@ RUN Import-Module IISAdministration; `
     (Get-IISConfigSection -SectionPath 'system.webServer/security/authentication/anonymousAuthentication').Attributes['enabled'].value = $false; `
     (Get-IISServerManager).Sites[0].Applications[0].VirtualDirectories[0].PhysicalPath = 'c:\inetpub\wwwroot\app' ; `
     Stop-IISCommitDelay
-
-RUN $env:windir\system32\inetsrv\appcmd.exe set AppPool DefaultAppPool -processModel.identityType:NetworkService
 
 # Make logs readable by docker/k8s
 RUN Set-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'system.applicationHost/log' -name 'centralLogFileMode' -value 'CentralW3C'; `  
