@@ -18,7 +18,7 @@ RUN Import-Module IISAdministration; `
     (Get-IISServerManager).Sites[0].Applications[0].VirtualDirectories[0].PhysicalPath = 'c:\inetpub\wwwroot\app' ; `
     Stop-IISCommitDelay
 
-RUN %windir%\system32\inetsrv\appcmd.exe set AppPool DefaultAppPool -processModel.identityType:NetworkService
+RUN $env:windir\system32\inetsrv\appcmd.exe set AppPool DefaultAppPool -processModel.identityType:NetworkService
 
 # Make logs readable by docker/k8s
 RUN Set-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'system.applicationHost/log' -name 'centralLogFileMode' -value 'CentralW3C'; `  
